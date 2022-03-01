@@ -13,6 +13,10 @@ public class EmailDAO {
         Contact c1= new Contact("abc@gmail.com");
         Contact c2= new Contact("def@gmail.com");
         Contact c3= new Contact("xyz@gmail.com");
+
+        emails.add(c1.getEmail());
+        emails.add(c2.getEmail());
+        emails.add(c3.getEmail());
     }
 
 
