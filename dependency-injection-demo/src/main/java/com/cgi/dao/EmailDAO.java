@@ -16,7 +16,7 @@ public class EmailDAO {
     }
 
 
-    private static List<String> getEmails(){
+    public List<String> getEmails(){
         //In real- world applications this list will be fetched from database.
         return emails;
     }
