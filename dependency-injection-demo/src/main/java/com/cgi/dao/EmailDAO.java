@@ -1,10 +1,12 @@
 package com.cgi.dao;
 
 import com.cgi.model.Contact;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EmailDAO {
     private static List<String> emails;
 

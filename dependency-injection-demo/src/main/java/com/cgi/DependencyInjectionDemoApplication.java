@@ -1,5 +1,6 @@
 package com.cgi;
 
+import com.cgi.dao.EmailDAO;
 import com.cgi.service.EmailService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,9 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DependencyInjectionDemoApplication {
 
 	public static void main(String[] args) {
-		EmailService service= new EmailService();
-		service.sendEmail();
+
 		SpringApplication.run(DependencyInjectionDemoApplication.class, args);
+		EmailService service= new EmailService(new EmailDAO());
+		service.sendEmail();
 
 	}
 
