@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.cgi.com/spring/soap/api/calculator"
+            xmlns:tns="http://www.cgi.com/spring/soap/api/calculator"
+            elementFormDefault="qualified">
+
+    <xsd:element name="CalculateRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="numOne" type="xsd:int" />
+                <xsd:element name="numTwo" type="xsd:int" />
+                <xsd:element name="operation" type="xsd:string" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="CalculateResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="numOne" type="xsd:int" />
+                <xsd:element name="numTwo" type="xsd:int" />
+                <xsd:element name="operation" type="xsd:string" />
+                <xsd:element name="result" type="xsd:int" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
