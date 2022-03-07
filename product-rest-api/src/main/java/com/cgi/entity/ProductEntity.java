@@ -1,4 +1,4 @@
-package com.cgi.com.cgi.com.cgi.entity;
+package com.cgi.entity;
 
 import lombok.Data;
 
