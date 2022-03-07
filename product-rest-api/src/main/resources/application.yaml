@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/product
+    username: postgres
+    password: walnut@2
+  jpa:
+    show-sql: true
+server:
+  port: 8085
