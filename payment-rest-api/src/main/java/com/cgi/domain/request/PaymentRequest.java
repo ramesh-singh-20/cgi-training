@@ -9,5 +9,7 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentRequest {
     private Long id;
+    private Long orderId;
     private BigDecimal amount;
+
 }

@@ -1,10 +1,13 @@
 package com.cgi.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name=" PAYMENT")
+@Data
 public class PaymentEntity {
     @Id
     @Column(name= "ID")
@@ -18,5 +21,5 @@ public class PaymentEntity {
     private boolean status;
 
     @Column(name= "price", nullable = false)
-    private BigDecimal price;
+    private BigDecimal amount;
 }
