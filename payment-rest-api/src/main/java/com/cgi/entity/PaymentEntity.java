@@ -17,9 +17,9 @@ public class PaymentEntity {
     @Column(name= "ORDER_ID", nullable = false)
     private Long orderId;
 
-    @Column(name= "status", nullable = false)
-    private boolean status;
+    @Column(name= "STATUS", nullable = false)
+    private String status;
 
-    @Column(name= "price", nullable = false)
+    @Column(name= "AMOUNT", nullable = false)
     private BigDecimal amount;
 }

@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment-db
+    username: postgres
+    password: walnut@2
+  jpa:
+    show-sql: true
+server:
+  port: 8090

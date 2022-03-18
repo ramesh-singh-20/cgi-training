@@ -2,12 +2,12 @@ package com.cgi.service.impl;
 
 import com.cgi.domain.request.PaymentRequest;
 import com.cgi.domain.response.PaymentResponse;
+import com.cgi.domain.response.SubmitPaymentResponse;
 import com.cgi.entity.PaymentEntity;
 import com.cgi.mapper.PaymentMapper;
 import com.cgi.repository.PaymentRepository;
 import com.cgi.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,27 +16,26 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__({@Autowired}))
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentMapper paymentMapper;
     private final PaymentRepository paymentRepository;
 
     @Override
-    public PaymentResponse submitPayment(PaymentRequest paymentRequest) {
+    public SubmitPaymentResponse submitPayment(PaymentRequest paymentRequest) {
         PaymentEntity paymentEntity= paymentMapper.mapPaymentRequestToPaymentEntity(paymentRequest);
         boolean status= generatePaymentStatus();
-        PaymentResponse response= new PaymentResponse();
-        paymentEntity.setStatus(status);
-        paymentRepository.save(paymentEntity);
+
 
         if(status){
-            response.setStatus("SUCCESS");
+            paymentEntity.setStatus("SUCCESS");
         }else{
-            response.setStatus("FAILURE");
+            paymentEntity.setStatus("FAILURE");
         }
+        paymentRepository.save(paymentEntity);
 
-        return response;
+       return paymentMapper.mapStatusToSubmitPaymentResponse(paymentEntity.getStatus());
 
     }
 
