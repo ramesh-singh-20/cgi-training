@@ -1,4 +1,8 @@
 server:
   port: 8761
 
-spring:
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
