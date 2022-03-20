@@ -5,5 +5,16 @@ spring:
     password: walnut@2
   jpa:
     show-sql: true
+  application:
+    name: order-api
 server:
   port: 8095
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    instance-id: ${spring.application.name}:${random.uuid}

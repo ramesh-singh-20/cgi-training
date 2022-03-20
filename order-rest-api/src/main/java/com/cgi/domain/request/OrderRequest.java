@@ -11,5 +11,5 @@ import java.util.List;
 public class OrderRequest {
     private Long id;
     private BigDecimal amount;
-    private List<ProductRequest> productRequests;
+    private List<ProductRequest> products;
 }

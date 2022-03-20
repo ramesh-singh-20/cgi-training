@@ -1,5 +1,7 @@
 package com.cgi.service.impl;
 
+import com.cgi.domain.client.PaymentApiRequest;
+import com.cgi.domain.client.PaymentApiResponse;
 import com.cgi.domain.client.ProductApiResponse;
 import com.cgi.domain.request.OrderRequest;
 import com.cgi.domain.request.ProductRequest;
@@ -12,7 +14,6 @@ import com.cgi.repository.OrderProductRepository;
 import com.cgi.repository.OrderRepository;
 import com.cgi.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,8 +29,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderProductRepository orderProductRepository;
     private final OrderMapper orderMapper;
     private final RestTemplate restTemplate;
-    private final String GET_PRODUCTS_URL= "http://localhost:8085/products";
-    private final String SUBMIT_PAYMENT_URL= "http://localhost:8085/payments";
+    private final String GET_PRODUCTS_URL= "http://product-api";
+    private final String SUBMIT_PAYMENT_URL= "http://payment-api";
 
     @Override
     public void addOrder(OrderRequest request) {
@@ -37,24 +38,22 @@ public class OrderServiceImpl implements OrderService {
 
         BigDecimal amount= new BigDecimal(0.0);
 
-        //call Payment API and set status accordingly
-        for(ProductRequest productRequest: request.getProductRequests()){
+        //call Product API and calculate order amount
+        for(ProductRequest productRequest: request.getProducts()){
             ProductApiResponse productApiResponse= restTemplate.
-                    getForObject(GET_PRODUCTS_URL+ "/"+
-                            productRequest.getProductId(), ProductApiResponse.class);
+                    getForObject(GET_PRODUCTS_URL+ "/products/{id}",
+                            ProductApiResponse.class, productRequest.getProductId());
             amount= amount.add
                     (new BigDecimal
                             (productRequest.getQuantity())
                             .multiply(productApiResponse.getPrice()));
         }
+        orderEntity.setOrderStatus("ORDER_RECEIVED");
         orderEntity.setAmount(amount);
-
-        orderEntity.setAmount(new BigDecimal(2345.78));
-        orderEntity.setOrderStatus("SUCCESS");
-        orderRepository.save(orderEntity);
+        orderEntity= orderRepository.save(orderEntity);
 
         //saving OrderProduct Entity
-        for(ProductRequest productRequest : request.getProductRequests()){
+        for(ProductRequest productRequest : request.getProducts()){
             OrderProductEntity orderProduct= new OrderProductEntity();
             orderProduct.setOrder(orderEntity);
             orderProduct.setProductId(productRequest.getProductId());
@@ -62,7 +61,15 @@ public class OrderServiceImpl implements OrderService {
             orderProductRepository.save(orderProduct);
         }
 
-
+        //call Payment API to submit payment and update order status accordingly
+        PaymentApiRequest paymentApiRequest= new PaymentApiRequest();
+        paymentApiRequest.setOrderId(orderEntity.getId());
+        paymentApiRequest.setAmount(orderEntity.getAmount());
+        PaymentApiResponse paymentApiResponse= restTemplate.postForObject(SUBMIT_PAYMENT_URL+ "/payments",
+                paymentApiRequest,
+                PaymentApiResponse.class );
+        orderEntity.setOrderStatus(paymentApiResponse.getStatus());
+        orderRepository.save(orderEntity);
     }
 
     @Override
@@ -82,8 +89,8 @@ public class OrderServiceImpl implements OrderService {
             //call product-rest-api
 
             ProductApiResponse productApiResponseResponse=
-                    restTemplate.getForObject(GET_PRODUCTS_URL+ "/"+
-                            orderProduct.getProductId(), ProductApiResponse.class);
+                    restTemplate.getForObject(GET_PRODUCTS_URL+ "/products/{id}",
+                            ProductApiResponse.class, orderProduct.getProductId());
 
             ProductResponse productResponse= new ProductResponse();
 
@@ -91,6 +98,7 @@ public class OrderServiceImpl implements OrderService {
             productResponse.setName(productApiResponseResponse.getName());
             productResponse.setDescription(productApiResponseResponse.getDescription());
             productResponse.setPrice(productApiResponseResponse.getPrice());
+            productResponse.setQuantity(orderProduct.getQuantity());
             products.add(productResponse);
         });
 
@@ -108,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
             OrderResponse orderResponse= new OrderResponse();
             orderResponse.setId(orderEntity.getId());
             orderResponse.setAmount(orderEntity.getAmount());
+            orderResponse.setStatus(orderEntity.getOrderStatus());
 
             List<OrderProductEntity> orderProductEntities=
                     orderProductRepository.findByOrderId(orderEntity.getId());
@@ -115,13 +124,16 @@ public class OrderServiceImpl implements OrderService {
 
             orderProductEntities.forEach(orderProductEntity -> {
                 ProductResponse productResponse= new ProductResponse();
+
+
                 ProductApiResponse productApiResponse= restTemplate.
-                        getForObject(GET_PRODUCTS_URL+ "/"+
-                                orderProductEntity.getProductId(), ProductApiResponse.class);
+                        getForObject(GET_PRODUCTS_URL+ "/products/{id}",
+                                ProductApiResponse.class, orderProductEntity.getProductId());
                 productResponse.setProductId(orderProductEntity.getProductId());
                 productResponse.setName(productApiResponse.getName());
                 productResponse.setDescription(productApiResponse.getDescription());
                 productResponse.setPrice(productApiResponse.getPrice());
+                productResponse.setQuantity(orderProductEntity.getQuantity());
                 productResponses.add(productResponse);
             });
             orderResponse.setProducts(productResponses);
