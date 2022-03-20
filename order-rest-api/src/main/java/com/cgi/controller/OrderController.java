@@ -26,4 +26,9 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(service.getOrderById(id));
     }
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAllOrders(){
+        return ResponseEntity.status(HttpStatus.OK).body(service.getAllOrders());
+    }
+
 }
